@@ -1,5 +1,6 @@
 ﻿namespace MediatR.Extensions.Microsoft.DependencyInjection.Tests
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -99,6 +100,31 @@
         public Pong Handle(Ping message)
         {
             return new Pong { Message = message.Message + " Pong" };
+        }
+    }
+    
+    public class PingScopedDependency : IRequest<PongScopedDependency>
+    {
+
+    }
+
+    public class PongScopedDependency
+    {
+        public Guid Id { get; } = Guid.NewGuid();
+    }
+
+    public class PingScopedDependencyHandler : IRequestHandler<PingScopedDependency, PongScopedDependency>
+    {
+        readonly PongScopedDependency _transientDependency;
+
+        public PingScopedDependencyHandler(PongScopedDependency transientDependency)
+        {
+            _transientDependency = transientDependency;
+        }
+
+        public PongScopedDependency Handle(PingScopedDependency message)
+        {
+            return _transientDependency;
         }
     }
 }
